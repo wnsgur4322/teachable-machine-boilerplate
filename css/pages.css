@@ -1,0 +1,34 @@
+  /* Page Content/Box */
+  .page-content {
+    text-align: center;
+    background-color: #fefefe;
+    font-size: 24px;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    height: 270px;
+    width: 80%; /* Could be more or less, depending on screen size */
+  }
+
+    /* Page Content/Box */
+    .page-content_2 {
+        background-color: #fefefe;
+        font-size: 18px;
+        margin-right: 10px;
+        margin-top: 5%; /* 15% from the top and centered */
+        margin-bottom: 40px;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 100%; /* Could be more or less, depending on screen size */
+        
+      }
+
+      .page2-content {
+        background-color: #fefefe;
+        font-size: 24px;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        height: auto;
+        width: 95%; /* Could be more or less, depending on screen size */
+      }

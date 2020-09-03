@@ -10,66 +10,72 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License.
+// limitations under the License
 
 import "@babel/polyfill";
 import * as mobilenetModule from '@tensorflow-models/mobilenet';
 import * as tf from '@tensorflow/tfjs';
 import * as knnClassifier from '@tensorflow-models/knn-classifier';
-import { disposeVariables } from "@tensorflow/tfjs";
+//import { disposeVariables } from "@tensorflow/tfjs";
+import * as tfvis from '@tensorflow/tfjs-vis';
+import * as modeljs from '/home/kimchi/teachable-machine-boilerplate/model';
 
 // import CNN model classifier
 
+// page 1
 // Number of classes to classify
-var NUM_CLASSES = 2;
+//var num_class_input;
+var NUM_CLASSES;
+
+//var page1 = document.createElement('body');
+var num_class_input = document.createElement('input');
+var num_class_contents = document.createElement('div');
+var num_class_settings = document.createElement("div");
+
+var page1_paragraph = document.createElement('p');
+var num_class_submit = document.createElement('button');
+
+// page 2
+// define class one by one
+var page2_paragraph = document.createElement('p');
+page2_paragraph.style.display = 'none';
+var page2_contents = document.createElement('div');
+var page2_submit = document.createElement('button');
+
+// page 3
+// define and train model
+var page3_paragraph = document.createElement('p');
+page3_paragraph.style.display = 'none';
+
+// page 4
+var page4_paragraph = document.createElement('p');
+page4_paragraph.style.display = 'none';
+
+
+
 // Webcam Image size. Must be 227. 
 const IMAGE_SIZE = 400;
-// K value for KNN
-const TOPK = 10;
-/*
-navigator.getUserMedia = ( navigator.getUserMedia ||
-navigator.webkitGetUserMedia ||
-navigator.mozGetUserMedia ||
-navigator.msGetUserMedia);
-  
-var video;
-var webcamStream;
-
-function start_webcam() {
-  if (navigator.getUserMedia) {
-    navigator.getUserMedia ({
-      video: true,
-      audio: false
-      
-    },
-    function(localMediaStream){
-      video.document.querySelector('video');
-      video.src =
-      window.URL.createObjectURL(localMediaStream);
-        webcamStream = localMediaStream;
-    },
-    //error callback
-    function(err){
-      console.log("The following error occured: " + err);
-
-    });
-
-  }else {
-    console.log("getUserMedia is not supported");
-  }
-}
-function stopWebcam() {
-  webcamStream.stop();
-}
-*/
 
 var result = document.createElement('section');
 var infoTexts = [];
 var video = document.createElement('video');
 var train_button = document.createElement("button");
+//knn classifier setting part
+var settings_button = document.createElement("button");
+var settings_modal = document.createElement("div");
+var modal_contents = document.createElement("div");
+var close_button = document.createElement("button");
+var k_val_setting = document.createElement("p");
+var paragraph2 = document.createElement("p");
+var k_val = document.createElement("input");
+var k = 10;
+var settings_submit = document.createElement("button");
+
 var export_button = document.createElement("button");
-var canvases = new Array();
+var canvases = [];
 var training = -1; // -1 when no class is being trained
+var train_clicked = 0;
+var data_complete = 0;
 
 // Create training button
 const class_button = document.createElement('button')
@@ -102,191 +108,353 @@ class Main {
     video.style.margin = 'auto';
     video.style.display = 'flex';
 
+    //wait for NUM_CLASSES
+    function checkVariable() {
+      console.log(typeof(NUM_CLASSES));
+      if (typeof NUM_CLASSES !== "undefined"){
+        for (var i = 0; i < NUM_CLASSES; i++) {
+          canvases[i] = new Array();
+          }
+        
+        // page 2
+        // Create training buttons and info texts
+        page2_contents.className = 'page2-content';
+        page2_contents.innerText ="Step 2. Define each class";
+        page2_contents.style.textAlign = 'center';
+        document.getElementById('content2').appendChild(page2_paragraph);
+        page2_paragraph.appendChild(page2_contents);
+
+
+        for (let i = 0; i < NUM_CLASSES; i++) {
+          const div_title = document.createElement('section');
+          div_title.style.textAlign = 'left';
+          page2_contents.appendChild(div_title);
+
+          const div = document.createElement('div');
+          div.style.marginBottom = '10px';
+          div.style.width = '630px';
+          div.style.borderStyle = 'ridge';
+          div.style.borderRadius = '10px';
+          div.style.marginRight = '10px';
+          div.style.marginBottom = "20px";
+          div.style.textAlign = 'left';
+          page2_contents.appendChild(div);
+
+          //div.style.display = 'block';
+          //webcam button
+          const webcam_button = document.createElement('button');
+          webcam_button.innerText = 'Webcam';
+          webcam_button.style.width = '100px';
+          webcam_button.style.height = '30px';
+          webcam_button.style.marginTop = '10px';
+          webcam_button.style.marginLeft = '10px';
+          webcam_button.style.textAlign = 'left';
+          webcam_button.style.backgroundColor = 'white';
+          webcam_button.style.borderRadius = '10px';
+          div.appendChild(webcam_button);
+          webcam_button.addEventListener('mousedown', () => {
+                // Add video element to DOM
+            //video.addEventListener('playing', () => this.videoPlaying = true);
+            div.appendChild(video);
+            train_clicked = 0;
+            data_complete = 0;
+            
+            train_button.innerText ='Train model';
+          });
+
+          // Create training button
+          //const data_arr = new Array();
+          //canvases.push(data_arr);
+          var class_button = document.createElement('button')
+          class_button.style.width = '100px';
+          class_button.style.height = '30px';
+          class_button.style.margin = '10px';
+          class_button.style.backgroundColor = 'white';
+          class_button.style.borderRadius = '10px';
+          class_button.innerText = "class " + (i + 1);
+          div_title.appendChild(class_button);
+
+          // Listen for mouse events when clicking the button
+          //button.addEventListener('mousedown', () => this.training = i);
+          class_button.addEventListener('mouseup', () => training = -1);
+          class_button.addEventListener('mousedown', () => {
+
+            var hiddenCanvas = document.createElement('canvas');
+
+            hiddenCanvas.height = IMAGE_SIZE / 4;
+            hiddenCanvas.width = IMAGE_SIZE / 4;
+            var context = hiddenCanvas.getContext('2d');
+            var frame_img = tf.fromPixels(video);
+            var frame = document.querySelector('video');
+            context.drawImage(frame, 0, 0, IMAGE_SIZE/4, IMAGE_SIZE/4);
+            div.appendChild(hiddenCanvas);
+            // push canvas
+            //console.log(tf.shape(frame_img));
+            canvases[i].push(frame_img);
+            console.log(canvases);
+
+            training = i;
+            //for (let i = 0; i < NUM_CLASSES; i++) {
+              //infoTexts[i].style.display = 'none';
+              
+            //}
+          });
+        }
+
+        page2_submit.innerText ="Next";
+        page2_submit.id = "submit";
+        page2_contents.appendChild(page2_submit);
+
+        page2_submit.addEventListener('click', () => {
+          page2_paragraph.style.display = 'none';
+          page3_paragraph.style.display = 'block';
+        });
+      
+        // page 3
+        checkVariable2();
+      }
+      else{
+          setTimeout(checkVariable, 250);
+        }
+    }
+    checkVariable();
+
+    function checkVariable2() {
+      console.log(canvases.length);
+      if (canvases.length !== 0){
+        document.getElementById('content2').appendChild(page3_paragraph);
+        const section1 = document.createElement('section');
+        page3_paragraph.appendChild(section1);
+        section1.style.width = "550px";
+        section1.style.height = "auto";
+        //section1.style.marginLeft ="60%";
+        section1.style.borderStyle = 'ridge';
+        section1.style.borderRadius = '10px';
+        section1.style.margin ='auto';
+        section1.style.textAlign = 'center';
+        section1.style.marginBottom = '20px';
+
+        const train_title = document.createElement('p');
+        train_title.innerText ="Step 3. Model setting and training";
+        train_title.style.font = "Montserrat";
+        train_title.style.fontSize = "20px";
+        train_title.style.marginBottom ="0px";
+        train_title.style.borderBottom = 'ridge';
+        section1.appendChild(train_title);
+
+        const class_num = document.createElement('div');
+        class_num.innerText ="Number of classes:  " + NUM_CLASSES;
+        class_num.style.font = "Montserrat";
+        class_num.style.fontSize = "18px";
+        class_num.style.margin ="auto";
+        section1.appendChild(class_num);
+
+        const class_review = document.createElement('canvas');
+        class_review.style.margin = "auto";
+        // #review test
+        //const image = tf.toPixels(canvases[0], class_review);
+        section1.appendChild(class_review);
+
+        //this.train_button = document.createElement("button");
+        train_button.innerText = 'Train model';
+        train_button.style.width = '200px';
+        train_button.style.height = '30px';
+        train_button.style.margin = '10px';
+        train_button.style.backgroundColor = 'white';
+        train_button.style.borderRadius = '10px';
+        section1.appendChild(train_button);
+        
+        train_button.addEventListener('mouseup', () => training = -1);
+        train_button.addEventListener('click', () => {
+
+          if (canvases.length > 0){
+            page3_paragraph.style.display = 'none';
+            page4_paragraph.style.display = 'block';
+            result.style.display = "block";
+            train_clicked = 1;
+            // Create info text
+            train_button.innerText = 'model trained';
+            //while(this.result.firstChild){
+              //this.result.removeChild(this.result.firstChild);
+            //}
+            result.appendChild(video);
+            for (let i = 0; i < NUM_CLASSES; i++) {
+              //infoTexts[i].style.display = 'block';
+              
+            }
+          }
+          else {
+            alert("Please create your data first !!");
+          }
+          
+        });
+
+        settings_modal.className = 'modal';
+        settings_modal.id = "myModal";
+        section1.appendChild(settings_modal);
+
+        modal_contents.className = 'modal-content';
+        modal_contents.innerText ="Knn classifier settings"
+        settings_modal.appendChild(modal_contents);
+
+        k_val_setting.className = 'modal-content_2';
+        k_val_setting.innerText = "K val:";
+        modal_contents.appendChild(k_val_setting);
+
+        k_val.style.marginLeft = '10px';
+        k_val.type ="number";
+        k_val.defaultValue = k;
+        k_val.min = 1;
+        k_val.max = 99;
+        k_val.maxLength = 2;
+        k_val_setting.appendChild(k_val);
+
+        modal_contents.appendChild(paragraph2);
+
+        //close_button.className = 'fa fa-close';
+        close_button.innerText = "close";
+        close_button.value = "close";
+        close_button.id = 'submit';
+        paragraph2.appendChild(close_button);
+
+        settings_submit.innerText ="submit";
+        settings_submit.id = "submit";
+        paragraph2.appendChild(settings_submit);
+
+        settings_submit.addEventListener('click', () => {
+          k = k_val.value;
+          settings_modal.style.display = 'none';
+        });
+
+        close_button.addEventListener('click', () => {
+          settings_modal.style.display = "none";
+        });
+
+        settings_button.className ='fa fa-gear';
+        settings_button.style.fontSize = '24px';
+        settings_button.style.backgroundColor = 'white';
+        settings_button.style.borderRadius = '10px';
+        section1.appendChild(settings_button);
+
+        settings_button.addEventListener('click', () => {
+          settings_modal.style.display = "block";
+        });
+
+        checkVariable3();
+      }
+      else{
+        setTimeout(checkVariable2, 250);
+      }
+    }
+
+    function checkVariable3() {
+      if (train_clicked == 1){
+        document.getElementById('content2').appendChild(page4_paragraph);
+        page4_paragraph.appendChild(result);
+        result.style.width = "500px";
+        //section1.style.marginLeft ="60%";
+        result.style.borderStyle = 'ridge';
+        result.style.borderRadius = '10px';
+        result.style.marginRight ='0px';
+        result.style.right ='200px';
+        result.style.margin ='auto';
+        result.style.textAlign = 'center';
+        //result.style.display = "none";
+    
+        const result_title = document.createElement('p');
+        result_title.innerText ="Result Preview";
+        result_title.style.font = "Montserrat";
+        result_title.style.fontSize = "20px";
+        result_title.style.marginBottom ="0px";
+        result_title.style.borderBottom = 'ridge';
+        result.appendChild(result_title);
+    
+        export_button.innerText = "Export Model";
+        export_button.style.font = "Montserrat";
+        export_button.style.fontSize = "15px";
+        export_button.style.textAlign = 'center';
+        export_button.style.borderRadius = "10px";
+        export_button.style.backgroundColor = "white";
+        export_button.style.display = 'flex';
+        export_button.style.marginLeft = '75%';
+        export_button.addEventListener("click", function() {
+          read_file.click();
+        });
+        result_title.appendChild(export_button);
+    
+        /*
+        var addclass_button = document.createElement('input');
+        addclass_button.setAttribute('type', 'button');
+        addclass_button.setAttribute('value', 'Add a class');
+        //addclass_button.innerText = 'Add a class';
+        addclass_button.style.width = '140px';
+        addclass_button.style.height = '30px';
+        addclass_button.style.margin = '10px';
+        addclass_button.style.backgroundColor = 'white';
+        addclass_button.style.borderRadius = '10px';
+        document.getElementById("content2").appendChild(addclass_button);
+    */
+    
+        for (let i = 0; i < NUM_CLASSES; i++) {
+          const infoText = document.createElement('h4')
+          infoText.innerText =   "class "  + (i + 1) + " : No examples added";
+          infoText.style.fontSize = "20px";
+          infoText.style.width = "300px";
+          infoText.style.marginBottom = "5px";
+          //nfoText.style.display = "none";
+          result.appendChild(infoText);
+          infoTexts.push(infoText);
+        }
+      }
+      else{
+        setTimeout(checkVariable3, 250);
+      }
+    }
+
+
+    //page 1
+    document.getElementById('content2').appendChild(page1_paragraph);
+    
+    num_class_contents.className = 'page-content';
+    num_class_contents.innerText ="Step 1. Set the number of classes";
+    page1_paragraph.appendChild(num_class_contents);
+
+    num_class_settings.className = 'page-content_2';
+    num_class_settings.innerText = "The number of classes";
+    num_class_contents.appendChild(num_class_settings);
+
+    num_class_input.style.textAlign = 'center';
+    num_class_input.style.marginLeft = '40px';
+    num_class_input.type ="number";
+    num_class_input.defaultValue = 2;
+    num_class_input.min = 2;
+    num_class_input.max = 99;
+    num_class_input.maxLength = 2;
+    num_class_settings.appendChild(num_class_input);
+
+
+    num_class_submit.innerText ="submit";
+    num_class_submit.id = "submit";
+    num_class_contents.appendChild(num_class_submit);
+
+    num_class_submit.addEventListener('click', () => {
+      NUM_CLASSES = parseInt(num_class_input.value);
+      page1_paragraph.style.display = 'none';
+      page2_paragraph.style.display = 'block';
+    });
+    
     // Add video element to DOM
     //document.getElementById("content").appendChild(this.video);
 
-    const section1 = document.createElement('section');
-    document.getElementById("content3").appendChild(section1);
-    section1.style.width = "300px";
-    section1.style.height = "200px";
-    //section1.style.marginLeft ="60%";
-    section1.style.borderStyle = 'ridge';
-    section1.style.borderRadius = '10px';
-    section1.style.marginRight ='0px';
-    section1.style.right ='200px';
-    section1.style.margin ='auto';
-    section1.style.textAlign = 'center';
-    section1.style.marginLeft = '170px';
-    section1.style.marginBottom = '20px';
-
-    const train_title = document.createElement('p');
-    train_title.innerText ="Training";
-    train_title.style.font = "Montserrat";
-    train_title.style.fontSize = "20px";
-    train_title.style.marginBottom ="0px";
-    train_title.style.borderBottom = 'ridge';
-    section1.appendChild(train_title);
-
-    //this.train_button = document.createElement("button");
-    train_button.innerText = 'Train model';
-    train_button.style.width = '200px';
-    train_button.style.height = '30px';
-    train_button.style.margin = '10px';
-    train_button.style.backgroundColor = 'white';
-    train_button.style.borderRadius = '10px';
-    section1.appendChild(train_button);
-    
-    train_button.addEventListener('mouseup', () => training = -1);
-    train_button.addEventListener('click', () => {
-
-      if (canvases.length > 0){
-        result.style.display = "block";
-        // Create info text
-        train_button.innerText = 'model trained';
-        //while(this.result.firstChild){
-          //this.result.removeChild(this.result.firstChild);
-        //}
-        result.appendChild(video);
-        for (let i = 0; i < NUM_CLASSES; i++) {
-          infoTexts[i].style.display = 'block';
-          
-        }
-      }
-      else {
-        alert("Please create your data first !!");
-      }
-      
-    });
     
     //this.result = document.createElement('section');
-    document.getElementById("content3").appendChild(result);
-    result.style.width = "500px";
-    //section1.style.marginLeft ="60%";
-    result.style.borderStyle = 'ridge';
-    result.style.borderRadius = '10px';
-    result.style.marginRight ='0px';
-    result.style.right ='200px';
-    result.style.margin ='auto';
-    result.style.marginLeft ="50px";
-    result.style.marginBottom = "30px";
-    result.style.textAlign = 'center';
-    //result.style.display = "none";
 
-    const result_title = document.createElement('p');
-    result_title.innerText ="Preview";
-    result_title.style.font = "Montserrat";
-    result_title.style.fontSize = "20px";
-    result_title.style.marginBottom ="0px";
-    result_title.style.borderBottom = 'ridge';
-    result.appendChild(result_title);
-
-    export_button.innerText = "Export Model";
-    export_button.style.font = "Montserrat";
-    export_button.style.fontSize = "15px";
-    export_button.style.textAlign = 'center';
-    export_button.style.borderRadius = "10px";
-    export_button.style.backgroundColor = "white";
-    export_button.style.display = 'flex';
-    export_button.style.marginLeft = '75%';
-    export_button.addEventListener("click", function() {
-      read_file.click();
-    });
-    result_title.appendChild(export_button);
-
-    var addclass_button = document.createElement('input');
-    addclass_button.setAttribute('type', 'button');
-    addclass_button.setAttribute('value', 'Add a class');
-    //addclass_button.innerText = 'Add a class';
-    addclass_button.style.width = '140px';
-    addclass_button.style.height = '30px';
-    addclass_button.style.margin = '10px';
-    addclass_button.style.backgroundColor = 'white';
-    addclass_button.style.borderRadius = '10px';
-    document.getElementById("content2").appendChild(addclass_button);
-
-
-    for (let i = 0; i < NUM_CLASSES; i++) {
-      const infoText = document.createElement('h4')
-      infoText.innerText =   "class "  + (i + 1) + " : No examples added";
-      infoText.style.fontSize = "20px";
-      infoText.style.width = "300px";
-      infoText.style.marginBottom = "5px";
-      infoText.style.display = "none";
-      result.appendChild(infoText);
-      infoTexts.push(infoText);
-    }
-
-    // Create training buttons and info texts    
-    for (let i = 0; i < NUM_CLASSES; i++) {
-      const div_title = document.createElement('section');
-      document.getElementById("content2").appendChild(div_title);
-      div_title.style.width ="650px";
-      div_title.style.height = "50px";
-      div_title.style.borderStyle = 'ridge';
-      div_title.style.borderRadius = '10px';
-      //div_title.style.display = 'flex';
-
-      const div = document.createElement('div');
-      //document.body.appendChild(div);
-      div.style.marginBottom = '10px';
-      div.style.width = '650px';
-      div.style.borderStyle = 'ridge';
-      div.style.borderRadius = '10px';
-      div.style.marginRight = '0px';
-      div.style.marginBottom = "20px";
-      document.getElementById("content2").appendChild(div);
-
-      //div.style.display = 'block';
-      //webcam button
-      const webcam_button = document.createElement('button');
-      webcam_button.innerText = 'Webcam';
-      webcam_button.style.width = '100px';
-      webcam_button.style.height = '30px';
-      webcam_button.style.margin = '10px';
-      webcam_button.style.backgroundColor = 'white';
-      webcam_button.style.borderRadius = '10px';
-      div.appendChild(webcam_button);
-      webcam_button.addEventListener('mousedown', () => {
-            // Add video element to DOM
-        div.appendChild(video);
-        train_button.innerText ='Train model';
-      });
-
-      // Create training button
-      var class_button = document.createElement('button')
-      class_button.style.width = '100px';
-      class_button.style.height = '30px';
-      class_button.style.margin = '10px';
-      class_button.style.backgroundColor = 'white';
-      class_button.style.borderRadius = '10px';
-      class_button.innerText = "class " + (i + 1);
-      div_title.appendChild(class_button);
-
-      // Listen for mouse events when clicking the button
-      //button.addEventListener('mousedown', () => this.training = i);
-      class_button.addEventListener('mouseup', () => training = -1);
-      class_button.addEventListener('mousedown', () => {
-        var hiddenCanvas = document.createElement('canvas');
-        hiddenCanvas.height = IMAGE_SIZE / 4;
-        hiddenCanvas.width = IMAGE_SIZE / 4;
-        var context = hiddenCanvas.getContext('2d');
-        var frame = document.querySelector('video');
-        context.drawImage(frame, 0, 0, IMAGE_SIZE/4, IMAGE_SIZE/4);
-        div.appendChild(hiddenCanvas);
-        // push canvas
-        canvases.push(hiddenCanvas);
-        console.log(canvases);
-
-        training = i;
-        for (let i = 0; i < NUM_CLASSES; i++) {
-          infoTexts[i].style.display = 'none';
-          
-        }
-      });
-    }
-
+    /*
     addclass_button.addEventListener("click", function(){
+      train_clicked = 0;
+      data_complete = 0;
       NUM_CLASSES = NUM_CLASSES + 1;
+      canvases[NUM_CLASSES - 1] = new Array();
 
       var infoText = document.createElement('h4')
       infoText.innerText =   "class "  + (NUM_CLASSES) + " : No examples added";
@@ -326,6 +494,8 @@ class Main {
       webcam_button.style.borderRadius = '10px';
       div.appendChild(webcam_button);
       webcam_button.addEventListener('mousedown', () => {
+        train_clicked = 0;
+        data_complete = 0;
             // Add video element to DOM
         div.appendChild(video);
         train_button.innerText ='Train model';
@@ -351,11 +521,13 @@ class Main {
         hiddenCanvas.height = IMAGE_SIZE / 4;
         hiddenCanvas.width = IMAGE_SIZE / 4;
         var context = hiddenCanvas.getContext('2d');
+        
+        var frame_img = tf.fromPixels(video);
         var frame = document.querySelector('video');
         context.drawImage(frame, 0, 0, IMAGE_SIZE/4, IMAGE_SIZE/4);
         div.appendChild(hiddenCanvas);
         // push canvas
-        canvases.push(hiddenCanvas);
+        canvases[serial_num].push(frame_img);
         console.log(canvases);
 
         training = serial_num;
@@ -367,7 +539,7 @@ class Main {
       
       
     });
-    
+    */
 
 
     // Setup webcam
@@ -383,7 +555,10 @@ class Main {
   }
 
   async bindPage() {
+    //first knn
     this.knn = knnClassifier.create();
+
+    //tfvis.show.modelSummary({name: 'Model Summary'}, this.knn_2);
     this.mobilenet = await mobilenetModule.load();
 
     this.start();
@@ -402,6 +577,7 @@ class Main {
     cancelAnimationFrame(this.timer);
   }
 
+
   // 5/22 separate training function 1. take image and convert into vector (infer) 2. training knn part 3. testing and show result
   async animate() {
     if (this.videoPlaying) {
@@ -410,23 +586,61 @@ class Main {
 
       let logits;
       // 'conv_preds' is the logits activation of MobileNet.
+      // input: k dimensional vector
+      // output: class object
+      // x label: k attributes
+      // y label: multiple objects
       const infer = () => this.mobilenet.infer(image, 'conv_preds');
 
       // Train class if one of the buttons is held down
-      if (training != -1) {
-        logits = infer();
+      if (train_clicked == 1) {
 
-        // Add current image to classifier
+        // More code will be added below
+        // Create the model
+        const model = createModel();  
+        //tfvis.show.modelSummary({name: 'Model Summary'}, model);
+      
+
+        // Convert the data to a form we can use for training.
+        const inputTensor = tf.tensor2d(canvases, [canvases.length, 4]);
+        const tensorData = inputTensor;
+        const {inputs} = segmentationInput;
+        // https://github.com/tensorflow/tfjs-examples/blob/master/mnist-node/data.js
+        const labels = new Int32Array(tf.util.sizeFromShape([NUM_CLASSES, 1]));
+            
+        // Train the model  
+        await trainModel(model, inputs, labels);
+        console.log('Training Done');
+
+        // Make some predictions using the model and compare them to the
+        // original data
+        //testModel(model, data, tensorData);
         
-        this.knn.addExample(logits, training)
+      }
+      if (train_clicked == 1 && data_complete == 0 ) {
+        console.log("data collecting")
+        
+        //const model = createModel();  
+        //tfvis.show.modelSummary({name: 'Model Summary'}, model);
+        
+        for (let i = 0; i < NUM_CLASSES; i++){
+          for (let j = 0; j < canvases[i].length; j++){
+            const infer = () => this.mobilenet.infer(canvases[i][j], 'conv_preds');
+            logits = infer();
+            this.knn.addExample(logits, i);
+          }
+        }
+        data_complete = 1;
       }
 
       const numClasses = this.knn.getNumClasses();
-      if (numClasses > 0) {
 
+      if (numClasses > 0){ 
+        console.log("model training")
         // If classes have been added run predict
         logits = infer();
-        const res = await this.knn.predictClass(logits, TOPK);
+        console.log("k value: ", k);
+        const res = await this.knn.predictClass(logits, k);
 
         for (let i = 0; i < NUM_CLASSES; i++) {
           console.log(infoTexts.length);
@@ -460,9 +674,30 @@ class Main {
     }
     this.timer = requestAnimationFrame(this.animate.bind(this));
 
-    
   }
-  
 }
 
 window.addEventListener('load', () => new Main());
+
+/*async function run() {
+  
+  // More code will be added below
+  // Create the model
+    const model = createModel();  
+    tfvis.show.modelSummary({name: 'Model Summary'}, model);
+
+    // Convert the data to a form we can use for training.
+    const tensorData = canvases;
+    const {inputs} = tensorData;
+    const {labels} = [1,2];
+        
+    // Train the model  
+    await trainModel(model, inputs, labels);
+    console.log('Training Done');
+
+    // Make some predictions using the model and compare them to the
+    // original data
+    testModel(model, data, tensorData);
+}
+*/
+//document.addEventListener('DOMContentLoaded', run);
