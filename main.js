@@ -22,6 +22,12 @@ import * as modeljs from '/home/kimchi/teachable-machine-boilerplate/model';
 
 // import CNN model classifier
 
+// main page
+
+var main_page_paragraph = document.createElement('p');
+var main_page_contents = document.createElement('div');
+var main_page_submit = document.createElement('button');
+
 // page 1
 // Number of classes to classify
 //var num_class_input;
@@ -33,6 +39,7 @@ var num_class_contents = document.createElement('div');
 var num_class_settings = document.createElement("div");
 
 var page1_paragraph = document.createElement('p');
+page1_paragraph.style.display = 'none';
 var num_class_submit = document.createElement('button');
 
 // page 2
@@ -40,11 +47,16 @@ var num_class_submit = document.createElement('button');
 var page2_paragraph = document.createElement('p');
 page2_paragraph.style.display = 'none';
 var page2_contents = document.createElement('div');
-var page2_submit = document.createElement('button');
+var page2_submit = [];
+var page2_div_titles = [];
+var page2_divs = [];
+var page2_names = [];
+var page2_name_sign = [];
 
 // page 3
 // define and train model
 var page3_paragraph = document.createElement('p');
+var train_button = document.createElement('button');
 page3_paragraph.style.display = 'none';
 
 // page 4
@@ -111,7 +123,7 @@ class Main {
     //wait for NUM_CLASSES
     function checkVariable() {
       console.log(typeof(NUM_CLASSES));
-      if (typeof NUM_CLASSES !== "undefined"){
+      if (typeof NUM_CLASSES !== "undefined" ){
         for (var i = 0; i < NUM_CLASSES; i++) {
           canvases[i] = new Array();
           }
@@ -126,19 +138,32 @@ class Main {
 
 
         for (let i = 0; i < NUM_CLASSES; i++) {
-          const div_title = document.createElement('section');
-          div_title.style.textAlign = 'left';
-          page2_contents.appendChild(div_title);
 
-          const div = document.createElement('div');
-          div.style.marginBottom = '10px';
-          div.style.width = '630px';
-          div.style.borderStyle = 'ridge';
-          div.style.borderRadius = '10px';
-          div.style.marginRight = '10px';
-          div.style.marginBottom = "20px";
-          div.style.textAlign = 'left';
-          page2_contents.appendChild(div);
+          page2_div_titles[i] = document.createElement('section');
+          page2_div_titles[i].style.textAlign = 'left';
+          page2_contents.appendChild(page2_div_titles[i]);
+
+          page2_name_sign[i] = document.createElement('div');
+          page2_name_sign[i].className = 'page-content_2';
+          page2_name_sign[i].innerText = "The name of class " + (i + 1);
+          page2_contents.appendChild(page2_name_sign[i]);
+
+          page2_names[i] = document.createElement('input');
+          page2_name_sign[i].appendChild(page2_names[i]);
+          page2_names[i].style.textAlign = 'center';
+          page2_names[i].style.marginLeft = '40px';
+          page2_names[i].type ="text";
+          page2_names[i].defaultValue = "Class" + (i+1);
+
+          page2_divs[i] = document.createElement('div');
+          page2_divs[i].style.marginBottom = '10px';
+          page2_divs[i].style.width = '630px';
+          page2_divs[i].style.borderStyle = 'ridge';
+          page2_divs[i].style.borderRadius = '10px';
+          page2_divs[i].style.marginRight = '10px';
+          page2_divs[i].style.marginBottom = "20px";
+          page2_divs[i].style.textAlign = 'left';
+          page2_contents.appendChild( page2_divs[i]);
 
           //div.style.display = 'block';
           //webcam button
@@ -151,15 +176,13 @@ class Main {
           webcam_button.style.textAlign = 'left';
           webcam_button.style.backgroundColor = 'white';
           webcam_button.style.borderRadius = '10px';
-          div.appendChild(webcam_button);
+          page2_divs[i].appendChild(webcam_button);
           webcam_button.addEventListener('mousedown', () => {
                 // Add video element to DOM
-            //video.addEventListener('playing', () => this.videoPlaying = true);
-            div.appendChild(video);
+            video.addEventListener('playing', () => this.videoPlaying = true);
+            page2_divs[i].appendChild(video);
             train_clicked = 0;
             data_complete = 0;
-            
-            train_button.innerText ='Train model';
           });
 
           // Create training button
@@ -171,8 +194,8 @@ class Main {
           class_button.style.margin = '10px';
           class_button.style.backgroundColor = 'white';
           class_button.style.borderRadius = '10px';
-          class_button.innerText = "class " + (i + 1);
-          div_title.appendChild(class_button);
+          class_button.innerText = "Capture";
+          page2_divs[i].appendChild(class_button);
 
           // Listen for mouse events when clicking the button
           //button.addEventListener('mousedown', () => this.training = i);
@@ -187,7 +210,7 @@ class Main {
             var frame_img = tf.fromPixels(video);
             var frame = document.querySelector('video');
             context.drawImage(frame, 0, 0, IMAGE_SIZE/4, IMAGE_SIZE/4);
-            div.appendChild(hiddenCanvas);
+            page2_divs[i].appendChild(hiddenCanvas);
             // push canvas
             //console.log(tf.shape(frame_img));
             canvases[i].push(frame_img);
@@ -199,17 +222,44 @@ class Main {
               
             //}
           });
+
+          if (i > 0){
+          page2_divs[i].style.display = 'none';
+          page2_div_titles[i].style.display ='none';
+          page2_name_sign[i].style.display = 'none';
+          }
         }
 
-        page2_submit.innerText ="Next";
-        page2_submit.id = "submit";
-        page2_contents.appendChild(page2_submit);
+        for (let i = 0; i < NUM_CLASSES; i++) {
+          console.log(i);
+          page2_submit[i] = document.createElement('button');
 
-        page2_submit.addEventListener('click', () => {
-          page2_paragraph.style.display = 'none';
-          page3_paragraph.style.display = 'block';
-        });
-      
+          page2_submit[i].innerText ="Next";
+          page2_submit[i].id = "submit";
+          page2_contents.appendChild(page2_submit[i]);
+
+          if (i > 0){
+            page2_submit[i].style.display = 'none';
+          }
+
+          page2_submit[i].addEventListener('click', () => {
+            page2_divs[i].style.display = 'none';
+            page2_div_titles[i].style.display = 'none';
+            page2_submit[i].style.display = 'none';
+            page2_name_sign[i].style.display = 'none';
+            
+            if (i != NUM_CLASSES - 1){
+              page2_divs[i+1].style.display = 'block';
+              page2_div_titles[i+1].style.display = 'block';
+              page2_submit[i+1].style.display = 'block';
+              page2_name_sign[i+1].style.display = 'block';
+            }
+            else{
+              page2_paragraph.style.display = 'none';
+              page3_paragraph.style.display = 'block';
+            }
+          });
+        }
         // page 3
         checkVariable2();
       }
@@ -222,24 +272,15 @@ class Main {
     function checkVariable2() {
       console.log(canvases.length);
       if (canvases.length !== 0){
-        document.getElementById('content2').appendChild(page3_paragraph);
-        const section1 = document.createElement('section');
-        page3_paragraph.appendChild(section1);
-        section1.style.width = "550px";
-        section1.style.height = "auto";
-        //section1.style.marginLeft ="60%";
-        section1.style.borderStyle = 'ridge';
-        section1.style.borderRadius = '10px';
-        section1.style.margin ='auto';
-        section1.style.textAlign = 'center';
-        section1.style.marginBottom = '20px';
 
-        const train_title = document.createElement('p');
+        document.getElementById('content2').appendChild(page3_paragraph);
+        var section1 = document.createElement('div');
+        section1.className = 'page-content'
+        page3_paragraph.appendChild(section1);
+
+        var train_title = document.createElement('div');
+        train_title.className = 'page-content_2'
         train_title.innerText ="Step 3. Model setting and training";
-        train_title.style.font = "Montserrat";
-        train_title.style.fontSize = "20px";
-        train_title.style.marginBottom ="0px";
-        train_title.style.borderBottom = 'ridge';
         section1.appendChild(train_title);
 
         const class_num = document.createElement('div');
@@ -256,12 +297,8 @@ class Main {
         section1.appendChild(class_review);
 
         //this.train_button = document.createElement("button");
-        train_button.innerText = 'Train model';
-        train_button.style.width = '200px';
-        train_button.style.height = '30px';
-        train_button.style.margin = '10px';
-        train_button.style.backgroundColor = 'white';
-        train_button.style.borderRadius = '10px';
+        train_button.id = 'submit';
+        train_button.innerText = 'Train Model';
         section1.appendChild(train_button);
         
         train_button.addEventListener('mouseup', () => training = -1);
@@ -270,14 +307,7 @@ class Main {
           if (canvases.length > 0){
             page3_paragraph.style.display = 'none';
             page4_paragraph.style.display = 'block';
-            result.style.display = "block";
             train_clicked = 1;
-            // Create info text
-            train_button.innerText = 'model trained';
-            //while(this.result.firstChild){
-              //this.result.removeChild(this.result.firstChild);
-            //}
-            result.appendChild(video);
             for (let i = 0; i < NUM_CLASSES; i++) {
               //infoTexts[i].style.display = 'block';
               
@@ -351,6 +381,7 @@ class Main {
       if (train_clicked == 1){
         document.getElementById('content2').appendChild(page4_paragraph);
         page4_paragraph.appendChild(result);
+        result.appendChild(video);
         result.style.width = "500px";
         //section1.style.marginLeft ="60%";
         result.style.borderStyle = 'ridge';
@@ -410,6 +441,28 @@ class Main {
         setTimeout(checkVariable3, 250);
       }
     }
+    // main page
+    document.getElementById('content2').appendChild(main_page_paragraph);
+    main_page_contents.className = 'page-content';
+    main_page_contents.innerText = 'Welcome to Teachable Machine!';
+    main_page_paragraph.appendChild(main_page_contents);
+
+    var main_page_box = document.createElement('div');
+    main_page_box.className = 'page-content_2';
+    main_page_contents.appendChild(main_page_box);
+
+
+    main_page_submit.innerText ="New Project";
+    main_page_submit.id = "submit";
+    main_page_box.appendChild(main_page_submit);
+
+    main_page_submit.addEventListener('click', () => {
+      main_page_paragraph.style.display = 'none';
+      page1_paragraph.style.display = 'block';
+    });
+
+
+    
 
 
     //page 1
@@ -593,7 +646,7 @@ class Main {
       const infer = () => this.mobilenet.infer(image, 'conv_preds');
 
       // Train class if one of the buttons is held down
-      if (train_clicked == 1) {
+      /*if (train_clicked == 1) {
 
         // More code will be added below
         // Create the model
@@ -604,7 +657,7 @@ class Main {
         // Convert the data to a form we can use for training.
         const inputTensor = tf.tensor2d(canvases, [canvases.length, 4]);
         const tensorData = inputTensor;
-        const {inputs} = segmentationInput;
+        // const {inputs} = segmentationInput;
         // https://github.com/tensorflow/tfjs-examples/blob/master/mnist-node/data.js
         const labels = new Int32Array(tf.util.sizeFromShape([NUM_CLASSES, 1]));
             
@@ -616,9 +669,9 @@ class Main {
         // original data
         //testModel(model, data, tensorData);
         
-      }
+      }*/
       if (train_clicked == 1 && data_complete == 0 ) {
-        console.log("data collecting")
+        console.log("data collecting");
         
         //const model = createModel();  
         //tfvis.show.modelSummary({name: 'Model Summary'}, model);
@@ -631,19 +684,19 @@ class Main {
           }
         }
         data_complete = 1;
+        console.log("data completed");
       }
 
       const numClasses = this.knn.getNumClasses();
 
-      if (numClasses > 0){ 
-        console.log("model training")
+      if (numClasses > 0){
         // If classes have been added run predict
         logits = infer();
-        console.log("k value: ", k);
+        //console.log("k value: ", k);
         const res = await this.knn.predictClass(logits, k);
 
         for (let i = 0; i < NUM_CLASSES; i++) {
-          console.log(infoTexts.length);
+          //console.log(infoTexts.length);
 
           // The number of examples for each class
           const exampleCount = this.knn.getClassExampleCount();
@@ -661,7 +714,7 @@ class Main {
             infoTexts[i].style.width = "300px";
             infoTexts[i].style.marginBottom = "5px";
             
-            infoTexts[i].innerText = "class " + (i + 1) + " : " + ` ${exampleCount[i]} examples - ${res.confidences[i] * 100}%`
+            infoTexts[i].innerText = page2_names[i].value + " : " + ` ${exampleCount[i]} examples - ${res.confidences[i] * 100}%`
           }
         }
       }

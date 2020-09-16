@@ -35,11 +35,12 @@
     
 #submit {
     background-color: white;
-    float: right;
+    float: center;
     font-size: 20px;
     font-weight: bold;
-    margin-right: 5px;
-    width: 100px;
+    margin: auto;
+    align-self: center;
+    width: auto;
     border-radius: 10px;
     text-align: center;
 }
