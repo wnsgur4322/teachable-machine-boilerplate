@@ -12,7 +12,7 @@
     "browserify": "^16.5.2"
   },
   "scripts": {
-    "start": "budo main.js:dist/build.js --live --host 0.0.0.0",
+    "start": "budo main.js:dist/build.js --live --host localhost",
     "build": "browserify main.js -o dist/build.js"
   },
   "pre-commit": [

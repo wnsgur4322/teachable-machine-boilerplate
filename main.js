@@ -27,6 +27,7 @@ import * as modeljs from '/home/kimchi/teachable-machine-boilerplate/model';
 var main_page_paragraph = document.createElement('p');
 var main_page_contents = document.createElement('div');
 var main_page_submit = document.createElement('button');
+var paper_link = document.createElement('button');
 
 // page 1
 // Number of classes to classify
@@ -57,10 +58,12 @@ var page2_name_sign = [];
 // define and train model
 var page3_paragraph = document.createElement('p');
 var train_button = document.createElement('button');
+page3_paragraph.style.margin = '10% auto';
 page3_paragraph.style.display = 'none';
 
 // page 4
 var page4_paragraph = document.createElement('p');
+page4_paragraph.style.margin = '10% auto';
 page4_paragraph.style.display = 'none';
 
 
@@ -168,14 +171,8 @@ class Main {
           //webcam button
           const webcam_button = document.createElement('button');
           webcam_button.innerText = 'Webcam';
+          webcam_button.style.marginRight = '10px'; 
           webcam_button.id = 'submit';
-          webcam_button.style.width = 'auto';
-          webcam_button.style.height = '30px';
-          webcam_button.style.marginTop = '10px';
-          webcam_button.style.marginLeft = '10px';
-          webcam_button.style.textAlign = 'left';
-          webcam_button.style.backgroundColor = 'white';
-          webcam_button.style.borderRadius = '10px';
           page2_divs[i].appendChild(webcam_button);
           webcam_button.addEventListener('mousedown', () => {
                 // Add video element to DOM
@@ -190,11 +187,6 @@ class Main {
           //canvases.push(data_arr);
           var class_button = document.createElement('button')
           class_button.id = 'submit';
-          class_button.style.width = 'auto';
-          class_button.style.height = '30px';
-          class_button.style.margin = '10px';
-          class_button.style.backgroundColor = 'white';
-          class_button.style.borderRadius = '10px';
           class_button.innerText = "Capture";
           page2_divs[i].appendChild(class_button);
 
@@ -283,11 +275,14 @@ class Main {
         page3_paragraph.appendChild(section1);
 
         var train_title = document.createElement('div');
-        train_title.className = 'page-content_2'
+        //train_title.className = 'page-content'
         train_title.innerText ="Step 3. Model setting and training";
+        train_title.style.margin = 'auto';
+        train_title.style.marginBottom = '5px';
         section1.appendChild(train_title);
 
         const class_num = document.createElement('div');
+        class_num.className = 'page-content_2';
         class_num.innerText ="Number of classes:  " + NUM_CLASSES;
         class_num.style.font = "Montserrat";
         class_num.style.fontSize = "18px";
@@ -300,39 +295,16 @@ class Main {
         //const image = tf.toPixels(canvases[0], class_review);
         //section1.appendChild(class_review);
 
-        //this.train_button = document.createElement("button");
-        train_button.id = 'submit';
-        train_button.style.margin = 'auto';
-        train_button.innerText = 'Train Model';
-        section1.appendChild(train_button);
-
-        train_button.addEventListener('mouseup', () => training = -1);
-        train_button.addEventListener('click', () => {
-
-          if (canvases.length > 0){
-            page3_paragraph.style.display = 'none';
-            page4_paragraph.style.display = 'block';
-            train_clicked = 1;
-            for (let i = 0; i < NUM_CLASSES; i++) {
-              //infoTexts[i].style.display = 'block';
-
-            }
-          }
-          else {
-            alert("Please create your data first !!");
-          }
-
-        });
-
         //settings_modal.className = 'modal';
         //settings_modal.id = "myModal";
         //section1.appendChild(settings_modal);
 
         modal_contents.className = 'modal-content';
-        modal_contents.innerText ="Knn classifier settings"
-        section1.appendChild(modal_contents);
+        modal_contents.innerText ="Knn classifier settings";
+        modal_contents.style.fontSize = '15px';
+        //section1.appendChild(modal_contents);
 
-        k_val_setting.className = 'modal-content_2';
+        k_val_setting.className = 'page-content_2';
         k_val_setting.innerText = "K val:";
         section1.appendChild(k_val_setting);
 
@@ -355,6 +327,29 @@ class Main {
         //settings_submit.innerText ="submit";
         //settings_submit.id = "submit";
         //paragraph2.appendChild(settings_submit);
+        train_button.id = 'submit';
+        train_button.style.margin = 'auto';
+        train_button.innerText = 'Train Model';
+        section1.appendChild(train_button);
+
+        train_button.addEventListener('mouseup', () => training = -1);
+        train_button.addEventListener('click', () => {
+
+          if (canvases.length > 0){
+            k = k_val.value;
+            page3_paragraph.style.display = 'none';
+            page4_paragraph.style.display = 'block';
+            train_clicked = 1;
+            for (let i = 0; i < NUM_CLASSES; i++) {
+              //infoTexts[i].style.display = 'block';
+
+            }
+          }
+          else {
+            alert("Please create your data first !!");
+          }
+
+        });
 
         settings_submit.addEventListener('click', () => {
           k = k_val.value;
@@ -369,7 +364,7 @@ class Main {
         settings_button.style.fontSize = '24px';
         settings_button.style.backgroundColor = 'white';
         settings_button.style.borderRadius = '10px';
-        section1.appendChild(settings_button);
+        //section1.appendChild(settings_button);
 
         settings_button.addEventListener('click', () => {
           settings_modal.style.display = "block";
@@ -384,14 +379,14 @@ class Main {
 
     function checkVariable3() {
       if (train_clicked == 1){
-        document.getElementById('content2').appendChild(page4_paragraph);
+        document.getElementById('content').appendChild(page4_paragraph);
         page4_paragraph.appendChild(result);
         result.appendChild(video);
-        result.style.width = "70%";
+        //result.style.width = "70%";
         //section1.style.marginLeft ="60%";
         result.style.borderStyle = 'ridge';
         result.style.borderRadius = '10px';
-        result.style.margin ='auto';
+        result.style.margin ='10% auto';
         result.style.textAlign = 'center';
         //result.style.display = "none";
 
@@ -404,11 +399,7 @@ class Main {
         result.appendChild(result_title);
 
         export_button.innerText = "Save Model";
-        export_button.style.font = "Montserrat";
-        export_button.style.fontSize = "15px";
-        export_button.style.textAlign = 'center';
-        export_button.style.borderRadius = "10px";
-        export_button.style.backgroundColor = "white";
+        export_button.id = 'submit';
         export_button.style.display = 'flex';
         export_button.style.marginLeft = '75%';
         export_button.addEventListener("click", function() {
@@ -452,6 +443,7 @@ class Main {
 
     var main_page_box = document.createElement('div');
     main_page_box.className = 'page-content_2';
+    main_page_box.style.marginBottom = '0px';
     main_page_contents.appendChild(main_page_box);
 
 
@@ -463,6 +455,18 @@ class Main {
       main_page_paragraph.style.display = 'none';
       page1_paragraph.style.display = 'block';
     });
+
+    var main_page_box2 = document.createElement('div');
+    main_page_box2.className = 'page-content_2';
+    main_page_contents.appendChild(main_page_box2);
+    paper_link.innerText = "Visit Project Paper";
+    paper_link.id = 'submit';
+    main_page_box2.appendChild(paper_link);
+    
+    paper_link.addEventListener('click', () =>{
+      window.open("https://dl.acm.org/doi/abs/10.1145/3334480.3382839");
+    });
+
 
 
 

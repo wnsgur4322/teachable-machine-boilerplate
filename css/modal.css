@@ -26,7 +26,8 @@
     .modal-content_2 {
         background-color: #fefefe;
         font-size: 18px;
-        margin-top: 5%; /* 15% from the top and centered */
+        margin: auto; /* 15% from the top and centered */
+        margin-bottom: 10px;
         padding: 20px;
         border: 1px solid #888;
         width: 50%; /* Could be more or less, depending on screen size */
@@ -38,7 +39,7 @@
     float: center;
     font-size: 20px;
     font-weight: bold;
-    margin: auto;
+    margin:2% auto;
     align-self: center;
     width: auto;
     border-radius: 10px;
