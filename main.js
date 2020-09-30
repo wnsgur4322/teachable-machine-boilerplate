@@ -168,6 +168,7 @@ class Main {
           //webcam button
           const webcam_button = document.createElement('button');
           webcam_button.innerText = 'Webcam';
+          webcam_button.id = 'submit';
           webcam_button.style.width = 'auto';
           webcam_button.style.height = '30px';
           webcam_button.style.marginTop = '10px';
@@ -188,6 +189,7 @@ class Main {
           //const data_arr = new Array();
           //canvases.push(data_arr);
           var class_button = document.createElement('button')
+          class_button.id = 'submit';
           class_button.style.width = 'auto';
           class_button.style.height = '30px';
           class_button.style.margin = '10px';
@@ -322,17 +324,17 @@ class Main {
 
         });
 
-        settings_modal.className = 'modal';
-        settings_modal.id = "myModal";
-        section1.appendChild(settings_modal);
+        //settings_modal.className = 'modal';
+        //settings_modal.id = "myModal";
+        //section1.appendChild(settings_modal);
 
         modal_contents.className = 'modal-content';
         modal_contents.innerText ="Knn classifier settings"
-        settings_modal.appendChild(modal_contents);
+        section1.appendChild(modal_contents);
 
         k_val_setting.className = 'modal-content_2';
         k_val_setting.innerText = "K val:";
-        modal_contents.appendChild(k_val_setting);
+        section1.appendChild(k_val_setting);
 
         k_val.style.marginLeft = '10px';
         k_val.type ="number";
@@ -342,17 +344,17 @@ class Main {
         k_val.maxLength = 2;
         k_val_setting.appendChild(k_val);
 
-        modal_contents.appendChild(paragraph2);
+        //section1.appendChild(paragraph2);
 
         //close_button.className = 'fa fa-close';
-        close_button.innerText = "close";
-        close_button.value = "close";
-        close_button.id = 'submit';
-        paragraph2.appendChild(close_button);
+        //close_button.innerText = "close";
+        //close_button.value = "close";
+        //close_button.id = 'submit';
+        //paragraph2.appendChild(close_button);
 
-        settings_submit.innerText ="submit";
-        settings_submit.id = "submit";
-        paragraph2.appendChild(settings_submit);
+        //settings_submit.innerText ="submit";
+        //settings_submit.id = "submit";
+        //paragraph2.appendChild(settings_submit);
 
         settings_submit.addEventListener('click', () => {
           k = k_val.value;
@@ -401,7 +403,7 @@ class Main {
         result_title.style.borderBottom = 'ridge';
         result.appendChild(result_title);
 
-        export_button.innerText = "Export Model";
+        export_button.innerText = "Save Model";
         export_button.style.font = "Montserrat";
         export_button.style.fontSize = "15px";
         export_button.style.textAlign = 'center';
