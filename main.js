@@ -273,9 +273,11 @@ class Main {
       console.log(canvases.length);
       if (canvases.length !== 0){
 
-        document.getElementById('content2').appendChild(page3_paragraph);
+        document.getElementById('content').appendChild(page3_paragraph);
+        page3_paragraph.style.textAlign = 'center';
         var section1 = document.createElement('div');
-        section1.className = 'page-content'
+        section1.className = 'page-content';
+        section1.style.margin = 'auto';
         page3_paragraph.appendChild(section1);
 
         var train_title = document.createElement('div');
@@ -290,14 +292,15 @@ class Main {
         class_num.style.margin ="auto";
         section1.appendChild(class_num);
 
-        const class_review = document.createElement('canvas');
-        class_review.style.margin = "auto";
+        //const class_review = document.createElement('canvas');
+        //class_review.style.margin = "auto";
         // #review test
         //const image = tf.toPixels(canvases[0], class_review);
-        section1.appendChild(class_review);
+        //section1.appendChild(class_review);
 
         //this.train_button = document.createElement("button");
         train_button.id = 'submit';
+        train_button.style.margin = 'auto';
         train_button.innerText = 'Train Model';
         section1.appendChild(train_button);
 
@@ -386,8 +389,6 @@ class Main {
         //section1.style.marginLeft ="60%";
         result.style.borderStyle = 'ridge';
         result.style.borderRadius = '10px';
-        result.style.marginRight ='0px';
-        result.style.right ='200px';
         result.style.margin ='auto';
         result.style.textAlign = 'center';
         //result.style.display = "none";
@@ -396,7 +397,7 @@ class Main {
         result_title.innerText ="Result Preview";
         result_title.style.font = "Montserrat";
         result_title.style.fontSize = "20px";
-        result_title.style.marginBottom ="0px";
+        result_title.style.margin = 'auto';
         result_title.style.borderBottom = 'ridge';
         result.appendChild(result_title);
 
