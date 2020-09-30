@@ -65,7 +65,7 @@ page4_paragraph.style.display = 'none';
 
 
 
-// Webcam Image size. Must be 227. 
+// Webcam Image size. Must be 227.
 const IMAGE_SIZE = 400;
 
 var result = document.createElement('section');
@@ -103,7 +103,7 @@ class Main {
 
     // Initiate deeplearn.js math and knn classifier objects
     this.bindPage();
-    
+
     // header
     var header = document.createElement('header');
     header.innerText = "Teachable Machine";
@@ -127,7 +127,7 @@ class Main {
         for (var i = 0; i < NUM_CLASSES; i++) {
           canvases[i] = new Array();
           }
-        
+
         // page 2
         // Create training buttons and info texts
         page2_contents.className = 'page2-content';
@@ -152,24 +152,23 @@ class Main {
           page2_name_sign[i].appendChild(page2_names[i]);
           page2_names[i].style.textAlign = 'center';
           page2_names[i].style.marginLeft = '40px';
+          page2_names[i].style.width = 'auto';
           page2_names[i].type ="text";
           page2_names[i].defaultValue = "Class" + (i+1);
 
           page2_divs[i] = document.createElement('div');
-          page2_divs[i].style.marginBottom = '10px';
-          page2_divs[i].style.width = '630px';
+          page2_divs[i].style.width = 'auto';
           page2_divs[i].style.borderStyle = 'ridge';
           page2_divs[i].style.borderRadius = '10px';
-          page2_divs[i].style.marginRight = '10px';
-          page2_divs[i].style.marginBottom = "20px";
-          page2_divs[i].style.textAlign = 'left';
+          page2_divs[i].style.margin = 'auto';
+          page2_divs[i].style.textAlign = 'center';
           page2_contents.appendChild( page2_divs[i]);
 
           //div.style.display = 'block';
           //webcam button
           const webcam_button = document.createElement('button');
           webcam_button.innerText = 'Webcam';
-          webcam_button.style.width = '100px';
+          webcam_button.style.width = 'auto';
           webcam_button.style.height = '30px';
           webcam_button.style.marginTop = '10px';
           webcam_button.style.marginLeft = '10px';
@@ -189,7 +188,7 @@ class Main {
           //const data_arr = new Array();
           //canvases.push(data_arr);
           var class_button = document.createElement('button')
-          class_button.style.width = '100px';
+          class_button.style.width = 'auto';
           class_button.style.height = '30px';
           class_button.style.margin = '10px';
           class_button.style.backgroundColor = 'white';
@@ -206,6 +205,7 @@ class Main {
 
             hiddenCanvas.height = IMAGE_SIZE / 4;
             hiddenCanvas.width = IMAGE_SIZE / 4;
+            hiddenCanvas.style.margin = '2px';
             var context = hiddenCanvas.getContext('2d');
             var frame_img = tf.fromPixels(video);
             var frame = document.querySelector('video');
@@ -219,7 +219,7 @@ class Main {
             training = i;
             //for (let i = 0; i < NUM_CLASSES; i++) {
               //infoTexts[i].style.display = 'none';
-              
+
             //}
           });
 
@@ -247,7 +247,7 @@ class Main {
             page2_div_titles[i].style.display = 'none';
             page2_submit[i].style.display = 'none';
             page2_name_sign[i].style.display = 'none';
-            
+
             if (i != NUM_CLASSES - 1){
               page2_divs[i+1].style.display = 'block';
               page2_div_titles[i+1].style.display = 'block';
@@ -300,7 +300,7 @@ class Main {
         train_button.id = 'submit';
         train_button.innerText = 'Train Model';
         section1.appendChild(train_button);
-        
+
         train_button.addEventListener('mouseup', () => training = -1);
         train_button.addEventListener('click', () => {
 
@@ -310,13 +310,13 @@ class Main {
             train_clicked = 1;
             for (let i = 0; i < NUM_CLASSES; i++) {
               //infoTexts[i].style.display = 'block';
-              
+
             }
           }
           else {
             alert("Please create your data first !!");
           }
-          
+
         });
 
         settings_modal.className = 'modal';
@@ -382,7 +382,7 @@ class Main {
         document.getElementById('content2').appendChild(page4_paragraph);
         page4_paragraph.appendChild(result);
         result.appendChild(video);
-        result.style.width = "500px";
+        result.style.width = "70%";
         //section1.style.marginLeft ="60%";
         result.style.borderStyle = 'ridge';
         result.style.borderRadius = '10px';
@@ -391,7 +391,7 @@ class Main {
         result.style.margin ='auto';
         result.style.textAlign = 'center';
         //result.style.display = "none";
-    
+
         const result_title = document.createElement('p');
         result_title.innerText ="Result Preview";
         result_title.style.font = "Montserrat";
@@ -399,7 +399,7 @@ class Main {
         result_title.style.marginBottom ="0px";
         result_title.style.borderBottom = 'ridge';
         result.appendChild(result_title);
-    
+
         export_button.innerText = "Export Model";
         export_button.style.font = "Montserrat";
         export_button.style.fontSize = "15px";
@@ -412,7 +412,7 @@ class Main {
           read_file.click();
         });
         result_title.appendChild(export_button);
-    
+
         /*
         var addclass_button = document.createElement('input');
         addclass_button.setAttribute('type', 'button');
@@ -425,12 +425,12 @@ class Main {
         addclass_button.style.borderRadius = '10px';
         document.getElementById("content2").appendChild(addclass_button);
     */
-    
+
         for (let i = 0; i < NUM_CLASSES; i++) {
           const infoText = document.createElement('h4')
           infoText.innerText =   "class "  + (i + 1) + " : No examples added";
           infoText.style.fontSize = "20px";
-          infoText.style.width = "300px";
+          infoText.style.width = "70%";
           infoText.style.marginBottom = "5px";
           //nfoText.style.display = "none";
           result.appendChild(infoText);
@@ -452,7 +452,7 @@ class Main {
     main_page_contents.appendChild(main_page_box);
 
 
-    main_page_submit.innerText ="New Project";
+    main_page_submit.innerText ="Start New Project";
     main_page_submit.id = "submit";
     main_page_box.appendChild(main_page_submit);
 
@@ -462,12 +462,12 @@ class Main {
     });
 
 
-    
+
 
 
     //page 1
     document.getElementById('content2').appendChild(page1_paragraph);
-    
+
     num_class_contents.className = 'page-content';
     num_class_contents.innerText ="Step 1. Set the number of classes";
     page1_paragraph.appendChild(num_class_contents);
@@ -495,11 +495,11 @@ class Main {
       page1_paragraph.style.display = 'none';
       page2_paragraph.style.display = 'block';
     });
-    
+
     // Add video element to DOM
     //document.getElementById("content").appendChild(this.video);
 
-    
+
     //this.result = document.createElement('section');
 
     /*
@@ -564,7 +564,7 @@ class Main {
       class_button.style.borderRadius = '10px';
       class_button.innerText = "class " + (NUM_CLASSES);
       const serial_num = NUM_CLASSES - 1;
-      
+
       div_title.appendChild(class_button);
 
       // Listen for mouse events when clicking the button
@@ -574,7 +574,7 @@ class Main {
         hiddenCanvas.height = IMAGE_SIZE / 4;
         hiddenCanvas.width = IMAGE_SIZE / 4;
         var context = hiddenCanvas.getContext('2d');
-        
+
         var frame_img = tf.fromPixels(video);
         var frame = document.querySelector('video');
         context.drawImage(frame, 0, 0, IMAGE_SIZE/4, IMAGE_SIZE/4);
@@ -586,11 +586,11 @@ class Main {
         training = serial_num;
         for (let i = 0; i < NUM_CLASSES; i++) {
           infoTexts[i].style.display = 'none';
-          
+
         }
       });
-      
-      
+
+
     });
     */
 
@@ -650,9 +650,9 @@ class Main {
 
         // More code will be added below
         // Create the model
-        const model = createModel();  
+        const model = createModel();
         //tfvis.show.modelSummary({name: 'Model Summary'}, model);
-      
+
 
         // Convert the data to a form we can use for training.
         const inputTensor = tf.tensor2d(canvases, [canvases.length, 4]);
@@ -660,22 +660,22 @@ class Main {
         // const {inputs} = segmentationInput;
         // https://github.com/tensorflow/tfjs-examples/blob/master/mnist-node/data.js
         const labels = new Int32Array(tf.util.sizeFromShape([NUM_CLASSES, 1]));
-            
-        // Train the model  
+
+        // Train the model
         await trainModel(model, inputs, labels);
         console.log('Training Done');
 
         // Make some predictions using the model and compare them to the
         // original data
         //testModel(model, data, tensorData);
-        
+
       }*/
       if (train_clicked == 1 && data_complete == 0 ) {
         console.log("data collecting");
-        
-        //const model = createModel();  
+
+        //const model = createModel();
         //tfvis.show.modelSummary({name: 'Model Summary'}, model);
-        
+
         for (let i = 0; i < NUM_CLASSES; i++){
           for (let j = 0; j < canvases[i].length; j++){
             const infer = () => this.mobilenet.infer(canvases[i][j], 'conv_preds');
@@ -713,7 +713,7 @@ class Main {
             infoTexts[i].style.fontSize = "20px";
             infoTexts[i].style.width = "300px";
             infoTexts[i].style.marginBottom = "5px";
-            
+
             infoTexts[i].innerText = page2_names[i].value + " : " + ` ${exampleCount[i]} examples - ${res.confidences[i] * 100}%`
           }
         }
@@ -733,18 +733,18 @@ class Main {
 window.addEventListener('load', () => new Main());
 
 /*async function run() {
-  
+
   // More code will be added below
   // Create the model
-    const model = createModel();  
+    const model = createModel();
     tfvis.show.modelSummary({name: 'Model Summary'}, model);
 
     // Convert the data to a form we can use for training.
     const tensorData = canvases;
     const {inputs} = tensorData;
     const {labels} = [1,2];
-        
-    // Train the model  
+
+    // Train the model
     await trainModel(model, inputs, labels);
     console.log('Training Done');
 
