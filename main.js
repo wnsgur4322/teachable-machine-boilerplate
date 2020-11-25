@@ -18,7 +18,7 @@ import * as tf from '@tensorflow/tfjs';
 import * as knnClassifier from '@tensorflow-models/knn-classifier';
 //import { disposeVariables } from "@tensorflow/tfjs";
 import * as tfvis from '@tensorflow/tfjs-vis';
-import * as modeljs from '/home/kimchi/teachable-machine-boilerplate/model';
+//import * as modeljs from '~/model';
 
 // import CNN model classifier
 
